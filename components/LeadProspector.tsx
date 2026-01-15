@@ -46,9 +46,9 @@ export default function LeadProspector({ onSelectLead, customApiKey }: LeadProsp
       // Prompt imperativo e curto para economia de tokens e melhor ativação de grounding
       const searchPrompt = `Liste empresas reais de ${query} em ${location || 'minha localização'}.`;
 
-      // Usando v1beta (default) para suportar Tools, mas com modelo Experimental recente que existe na Beta
+      // ESTRATÉGIA SEGURA (SPLIT): v1beta para Tools + Modelo 8b (Mais leve e disponível na beta)
       const response = await ai.models.generateContent({
-        model: "gemini-2.0-flash-exp",
+        model: "gemini-1.5-flash-8b",
         contents: [{ role: 'user', parts: [{ text: searchPrompt }] }],
         config: {
           // SDK v1.34 exige camelCase para fazer a tradução interna correta
@@ -81,7 +81,7 @@ export default function LeadProspector({ onSelectLead, customApiKey }: LeadProsp
       let errorMessage = e?.message || JSON.stringify(e) || "Erro desconhecido";
 
       if (errorMessage.includes("429") || errorMessage.includes("RESOURCE_EXHAUSTED")) {
-        errorMessage = "Limite de Quota Excedido (429). O modelo 'gemini-2.0-flash-exp' está sobrecarregado ou seu Free Tier atingiu o limite. Tente novamente em 2 minutos.";
+        errorMessage = "Limite de Quota Excedido (429). A chave API atingiu o limite gratuito. Use uma Chave Personalizada no seu Perfil para continuar.";
       }
 
       setError(`Erro de Conexão: ${errorMessage}`);
