@@ -41,8 +41,8 @@ export default function LeadProspector({ onSelectLead, customApiKey }: LeadProsp
       const searchPrompt = `Liste empresas reais de ${query} em ${location || 'minha localização'}.`;
 
       const response = await ai.models.generateContent({
-        model: "gemini-1.5-flash",
-        contents: searchPrompt,
+        model: "gemini-1.5-flash-latest",
+        contents: [{ role: 'user', parts: [{ text: searchPrompt }] }],
         config: {
           tools: [{ googleMaps: {} }, { googleSearch: {} }],
           toolConfig: {

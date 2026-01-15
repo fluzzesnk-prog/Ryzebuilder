@@ -39,8 +39,8 @@ export const generateWebsite = async (
 
   try {
     const response = await ai.models.generateContent({
-      model: modelToUse,
-      contents: prompt,
+      model: "gemini-1.5-flash-latest",
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,
         temperature: 0.2, // Mais baixo para ser mais assertivo no código
