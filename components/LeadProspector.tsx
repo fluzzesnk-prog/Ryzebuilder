@@ -30,7 +30,8 @@ export default function LeadProspector({ onSelectLead, customApiKey }: LeadProsp
         throw new Error("API Key não configurada. Configure VITE_GEMINI_API_KEY na Vercel.");
       }
 
-      const ai = new GoogleGenAI({ apiKey: activeKey });
+      // FORÇANDO API v1 para garantir estabilidade e evitar erro 404 na v1beta
+      const ai = new GoogleGenAI({ apiKey: activeKey, apiVersion: 'v1' });
 
       let latLng = undefined;
       try {
@@ -46,7 +47,7 @@ export default function LeadProspector({ onSelectLead, customApiKey }: LeadProsp
       const searchPrompt = `Liste empresas reais de ${query} em ${location || 'minha localização'}.`;
 
       const response = await ai.models.generateContent({
-        model: "gemini-1.5-flash",
+        model: "gemini-1.5-flash-001",
         contents: [{ role: 'user', parts: [{ text: searchPrompt }] }],
         config: {
           // Casting as any to force snake_case which is the raw API expectation, bypassing SDK mapper risks
