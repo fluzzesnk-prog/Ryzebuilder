@@ -33,8 +33,8 @@ export const generateWebsite = async (
     throw new Error("API Key não configurada. Verifique as variáveis de ambiente na Vercel (VITE_GEMINI_API_KEY).");
   }
 
-  // FORÇANDO API v1 para evitar 404 em gerações de texto/código (Editor)
-  const ai = new GoogleGenAI({ apiKey: activeKey, apiVersion: 'v1' });
+  // Unificando no modelo que comprovadamente conecta (gemini-2.0-flash-exp na v1beta)
+  const ai = new GoogleGenAI({ apiKey: activeKey });
 
   const prompt = currentHtml
     ? `RYZE_REFINE: Atualize este código. REQ: "${description}". CODE: ${currentHtml}. Mantenha a estrutura, mude apenas o solicitado.`
@@ -42,7 +42,7 @@ export const generateWebsite = async (
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-1.5-flash",
+      model: "gemini-2.0-flash-exp",
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,

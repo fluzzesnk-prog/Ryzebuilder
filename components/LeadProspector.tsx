@@ -30,7 +30,7 @@ export default function LeadProspector({ onSelectLead, customApiKey }: LeadProsp
         throw new Error("API Key não configurada. Configure VITE_GEMINI_API_KEY na Vercel.");
       }
 
-      // Revertendo para v1beta (padrão) e usando o alias base 'gemini-1.5-flash'
+      // Unificando no modelo gemini-2.0-flash-exp na v1beta
       const ai = new GoogleGenAI({ apiKey: activeKey });
 
       let latLng = undefined;
@@ -78,7 +78,12 @@ export default function LeadProspector({ onSelectLead, customApiKey }: LeadProsp
     } catch (e: any) {
       console.error("Ryze Finder Error:", e);
       // Expondo o erro real para facilitar o debug do usuário se falhar novamente
-      const errorMessage = e?.message || JSON.stringify(e) || "Erro desconhecido";
+      let errorMessage = e?.message || JSON.stringify(e) || "Erro desconhecido";
+
+      if (errorMessage.includes("429") || errorMessage.includes("RESOURCE_EXHAUSTED")) {
+        errorMessage = "Limite de Quota Excedido (429). O modelo 'gemini-2.0-flash-exp' está sobrecarregado ou seu Free Tier atingiu o limite. Tente novamente em 2 minutos.";
+      }
+
       setError(`Erro de Conexão: ${errorMessage}`);
     } finally {
       setLoading(false);
