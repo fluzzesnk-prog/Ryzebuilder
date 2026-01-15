@@ -46,9 +46,9 @@ export default function LeadProspector({ onSelectLead, customApiKey }: LeadProsp
       // Prompt imperativo e curto para economia de tokens e melhor ativação de grounding
       const searchPrompt = `Liste empresas reais de ${query} em ${location || 'minha localização'}.`;
 
-      // ESTRATÉGIA SEGURA (SPLIT): v1beta para Tools + Modelo 8b (Mais leve e disponível na beta)
+      // ELITE MODE: Gemini 2.0 Flash Experimental (High Speed + Maps Grounding)
       const response = await ai.models.generateContent({
-        model: "gemini-1.5-flash-8b",
+        model: "gemini-2.0-flash-exp",
         contents: [{ role: 'user', parts: [{ text: searchPrompt }] }],
         config: {
           // SDK v1.34 exige camelCase para fazer a tradução interna correta
