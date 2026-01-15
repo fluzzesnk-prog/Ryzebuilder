@@ -31,7 +31,7 @@ export const generateWebsite = async (
   const ai = new GoogleGenAI({ apiKey: activeKey });
 
   // Padronizado para Flash para garantir escala e velocidade no tier gratuito
-  const modelToUse = 'gemini-3-flash-preview';
+  const modelToUse = 'gemini-1.5-flash';
 
   const prompt = currentHtml
     ? `RYZE_REFINE: Atualize este código. REQ: "${description}". CODE: ${currentHtml}. Mantenha a estrutura, mude apenas o solicitado.`

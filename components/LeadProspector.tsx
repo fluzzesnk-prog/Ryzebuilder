@@ -22,14 +22,14 @@ export default function LeadProspector({ onSelectLead, customApiKey }: LeadProsp
     setLoading(true);
     setError(null);
     setLeads([]);
-    
+
     try {
-      const activeKey = customApiKey || process.env.API_KEY;
+      const activeKey = customApiKey || import.meta.env.VITE_GEMINI_API_KEY;
       const ai = new GoogleGenAI({ apiKey: activeKey });
-      
+
       let latLng = undefined;
       try {
-        const pos = await new Promise<GeolocationPosition>((res, rej) => 
+        const pos = await new Promise<GeolocationPosition>((res, rej) =>
           navigator.geolocation.getCurrentPosition(res, rej, { timeout: 5000 })
         );
         latLng = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
@@ -41,7 +41,7 @@ export default function LeadProspector({ onSelectLead, customApiKey }: LeadProsp
       const searchPrompt = `Liste empresas reais de ${query} em ${location || 'minha localização'}.`;
 
       const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: "gemini-1.5-flash",
         contents: searchPrompt,
         config: {
           tools: [{ googleMaps: {} }, { googleSearch: {} }],
@@ -52,14 +52,14 @@ export default function LeadProspector({ onSelectLead, customApiKey }: LeadProsp
       });
 
       const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
-      
+
       const extractedLeads: Lead[] = chunks
         .filter((c: any) => c.maps)
         .map((c: any) => ({
           name: c.maps.title || "Empresa Encontrada",
           address: c.maps.uri ? "Identificado via Maps" : "Localizado via Search",
           uri: c.maps.uri,
-          rating: Math.floor(Math.random() * 2) + 3 
+          rating: Math.floor(Math.random() * 2) + 3
         }));
 
       if (extractedLeads.length === 0) {
@@ -97,8 +97,8 @@ export default function LeadProspector({ onSelectLead, customApiKey }: LeadProsp
         <div className="flex flex-col md:flex-row gap-4 p-4 bg-card/40 border border-white/5 rounded-[2rem] shadow-2xl backdrop-blur-xl">
           <div className="flex-1 relative">
             <Briefcase className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-600" />
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Ex: Clínicas Dentárias"
@@ -108,15 +108,15 @@ export default function LeadProspector({ onSelectLead, customApiKey }: LeadProsp
           <div className="w-px h-10 bg-white/5 self-center hidden md:block" />
           <div className="flex-1 relative">
             <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-600" />
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="Cidade ou Bairro"
               className="w-full bg-transparent border-none py-4 pl-14 pr-6 text-white text-sm focus:ring-0 placeholder:text-neutral-700"
             />
           </div>
-          <button 
+          <button
             onClick={searchLeads}
             disabled={loading || !query}
             className="px-10 py-4 bg-primary text-background rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 transition-all active:scale-95 shadow-lg shadow-primary/20 disabled:opacity-50"
@@ -166,7 +166,7 @@ export default function LeadProspector({ onSelectLead, customApiKey }: LeadProsp
                         <ExternalLink className="w-3.5 h-3.5 mr-2" /> Maps
                       </a>
                     )}
-                    <button 
+                    <button
                       onClick={() => handleBuildForLead(lead)}
                       className="flex-[2] flex items-center justify-center py-3 bg-primary text-background rounded-xl text-[9px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
                     >
