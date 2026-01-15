@@ -33,8 +33,8 @@ export const generateWebsite = async (
     throw new Error("API Key não configurada. Verifique as variáveis de ambiente na Vercel (VITE_GEMINI_API_KEY).");
   }
 
-  // FORÇANDO API v1 para evitar 404
-  const ai = new GoogleGenAI({ apiKey: activeKey, apiVersion: 'v1' });
+  // Voltando para v1beta (standard)
+  const ai = new GoogleGenAI({ apiKey: activeKey });
 
   const prompt = currentHtml
     ? `RYZE_REFINE: Atualize este código. REQ: "${description}". CODE: ${currentHtml}. Mantenha a estrutura, mude apenas o solicitado.`
