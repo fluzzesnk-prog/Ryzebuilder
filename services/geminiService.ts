@@ -33,7 +33,7 @@ export const generateWebsite = async (
     throw new Error("API Key não configurada. Verifique as variáveis de ambiente na Vercel (VITE_GEMINI_API_KEY).");
   }
 
-  // Voltando para v1beta (standard)
+  // Voltando para v1beta (standard) e alias base
   const ai = new GoogleGenAI({ apiKey: activeKey });
 
   const prompt = currentHtml
@@ -42,7 +42,7 @@ export const generateWebsite = async (
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-1.5-flash-001",
+      model: "gemini-1.5-flash",
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,
