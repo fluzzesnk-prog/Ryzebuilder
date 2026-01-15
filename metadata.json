@@ -1,0 +1,7 @@
+{
+  "name": "Ryze Builder OFICIAL",
+  "description": "AI Site Builder & Sales Intelligence",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
