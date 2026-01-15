@@ -49,7 +49,8 @@ export default function LeadProspector({ onSelectLead, customApiKey }: LeadProsp
         model: "gemini-1.5-flash",
         contents: [{ role: 'user', parts: [{ text: searchPrompt }] }],
         config: {
-          tools: [{ googleMaps: {} }, { googleSearch: {} }],
+          // Casting as any to force snake_case which is the raw API expectation, bypassing SDK mapper risks
+          tools: [{ google_maps: {} } as any, { google_search: {} } as any],
           toolConfig: {
             retrievalConfig: { latLng }
           }
@@ -74,7 +75,9 @@ export default function LeadProspector({ onSelectLead, customApiKey }: LeadProsp
       }
     } catch (e: any) {
       console.error("Ryze Finder Error:", e);
-      setError("Falha na conexão. Verifique sua cota ou tente novamente.");
+      // Expondo o erro real para facilitar o debug do usuário se falhar novamente
+      const errorMessage = e?.message || JSON.stringify(e) || "Erro desconhecido";
+      setError(`Erro de Conexão: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
