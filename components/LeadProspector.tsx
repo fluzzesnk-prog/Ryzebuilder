@@ -46,8 +46,9 @@ export default function LeadProspector({ onSelectLead, customApiKey }: LeadProsp
       // Prompt imperativo e curto para economia de tokens e melhor ativação de grounding
       const searchPrompt = `Liste empresas reais de ${query} em ${location || 'minha localização'}.`;
 
+      // Usando v1beta (default) para suportar Tools, mas com modelo Experimental recente que existe na Beta
       const response = await ai.models.generateContent({
-        model: "gemini-1.5-flash",
+        model: "gemini-2.0-flash-exp",
         contents: [{ role: 'user', parts: [{ text: searchPrompt }] }],
         config: {
           // SDK v1.34 exige camelCase para fazer a tradução interna correta
