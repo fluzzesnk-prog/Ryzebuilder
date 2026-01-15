@@ -21,19 +21,19 @@ OUTPUT:
 `;
 
 export const generateWebsite = async (
-  description: string, 
-  currentHtml?: string, 
+  description: string,
+  currentHtml?: string,
   customApiKey?: string,
-  retries = 3, 
-  delay = 10000 
+  retries = 3,
+  delay = 10000
 ): Promise<string> => {
-  const activeKey = customApiKey || process.env.API_KEY;
+  const activeKey = customApiKey || import.meta.env.VITE_GEMINI_API_KEY;
   const ai = new GoogleGenAI({ apiKey: activeKey });
-  
+
   // Padronizado para Flash para garantir escala e velocidade no tier gratuito
   const modelToUse = 'gemini-3-flash-preview';
 
-  const prompt = currentHtml 
+  const prompt = currentHtml
     ? `RYZE_REFINE: Atualize este código. REQ: "${description}". CODE: ${currentHtml}. Mantenha a estrutura, mude apenas o solicitado.`
     : `RYZE_CREATE: Crie do zero um(a) ${description}. Deve ser visualmente impactante e pronto para conversão.`;
 
@@ -51,7 +51,7 @@ export const generateWebsite = async (
     let text = response.text || '';
     const codeBlockRegex = /```html\s?([\s\S]*?)```/i;
     const match = text.match(codeBlockRegex);
-    
+
     let cleanedCode = match && match[1] ? match[1].trim() : text.trim();
     cleanedCode = cleanedCode.replace(/^```html/i, '').replace(/```$/i, '').trim();
 
@@ -59,9 +59,9 @@ export const generateWebsite = async (
       const firstTag = cleanedCode.indexOf('<');
       if (firstTag !== -1) cleanedCode = cleanedCode.substring(firstTag);
     }
-    
+
     return cleanedCode;
-    
+
   } catch (error: any) {
     console.error("Ryze Engine Error:", error);
     const msg = error.message || "";
@@ -71,7 +71,7 @@ export const generateWebsite = async (
       await new Promise(resolve => setTimeout(resolve, delay));
       return generateWebsite(description, currentHtml, customApiKey, retries - 1, delay + 5000);
     }
-    
+
     throw new Error(isQuota ? "Motor em alta demanda. Tente novamente em alguns segundos." : "Erro na geração. Refine sua descrição e tente novamente.");
   }
 };

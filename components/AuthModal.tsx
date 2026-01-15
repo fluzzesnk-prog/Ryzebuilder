@@ -11,8 +11,8 @@ interface AuthModalProps {
     isFullPage?: boolean;
 }
 
+
 const AuthModal: React.FC<AuthModalProps> = ({ onClose, isFullPage }) => {
-    const [isSignUp, setIsSignUp] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -26,21 +26,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, isFullPage }) => {
         setMessage('');
 
         try {
-            if (isSignUp) {
-                const { error } = await supabase.auth.signUp({
-                    email,
-                    password,
-                });
-                if (error) throw error;
-                setMessage('Verifique seu e-mail para confirmar o cadastro!');
-            } else {
-                const { error } = await supabase.auth.signInWithPassword({
-                    email,
-                    password,
-                });
-                if (error) throw error;
-                if (onClose) onClose();
-            }
+            const { error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
+            if (error) throw error;
+            if (onClose) onClose();
         } catch (err: any) {
             setError(err.message || 'Ocorreu um erro na autenticação.');
         } finally {
@@ -86,10 +77,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, isFullPage }) => {
                             <Sparkles className="w-7 h-7 text-primary" />
                         </div>
                         <h2 className="text-3xl font-black text-white tracking-tight">
-                            {isSignUp ? 'Criar Conta' : 'Acesse o Ryze'}
+                            Acesse o Ryze
                         </h2>
                         <p className="text-sm text-neutral-400 font-medium max-w-[280px] mx-auto leading-relaxed">
-                            {isSignUp ? 'Inicie sua jornada na inteligência artificial de elite.' : 'Entre para gerenciar seus projetos e prospectar leads.'}
+                            Entre para gerenciar seus projetos e prospectar leads de elite.
                         </p>
                     </div>
 
@@ -146,7 +137,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, isFullPage }) => {
                                 <Loader2 className="w-5 h-5 animate-spin" />
                             ) : (
                                 <>
-                                    {isSignUp ? 'Finalizar Cadastro' : 'Entrar na Plataforma'}
+                                    Entrar na Plataforma
                                     <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                                 </>
                             )}
@@ -156,16 +147,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose, isFullPage }) => {
                     <div className="relative py-2">
                         <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/5"></div></div>
                         <div className="relative flex justify-center text-[10px] uppercase font-black"><span className="bg-[#0A0A0A] px-3 text-neutral-600 tracking-widest">Sincronização Neural</span></div>
-                    </div>
-
-                    <div className="text-center">
-                        <button
-                            onClick={() => { setIsSignUp(!isSignUp); setError(''); setMessage(''); }}
-                            className="text-xs text-neutral-500 hover:text-white transition-colors py-2"
-                        >
-                            {isSignUp ? 'Já possui acesso? ' : 'Ainda não é um membro? '}
-                            <span className="text-primary font-black hover:underline">{isSignUp ? 'Fazer Login' : 'Solicitar Acesso'}</span>
-                        </button>
                     </div>
                 </div>
             </div>
