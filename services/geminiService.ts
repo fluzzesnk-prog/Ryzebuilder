@@ -28,10 +28,15 @@ export const generateWebsite = async (
   delay = 10000
 ): Promise<string> => {
   const activeKey = customApiKey || import.meta.env.VITE_GEMINI_API_KEY;
+
+  if (!activeKey || activeKey === 'PLACEHOLDER_API_KEY') {
+    throw new Error("API Key não configurada. Verifique as variáveis de ambiente na Vercel (VITE_GEMINI_API_KEY).");
+  }
+
   const ai = new GoogleGenAI({ apiKey: activeKey });
 
   // Padronizado para Flash para garantir escala e velocidade no tier gratuito
-  const modelToUse = 'gemini-1.5-flash';
+  const modelToUse = 'gemini-1.5-flash-latest';
 
   const prompt = currentHtml
     ? `RYZE_REFINE: Atualize este código. REQ: "${description}". CODE: ${currentHtml}. Mantenha a estrutura, mude apenas o solicitado.`
@@ -39,7 +44,7 @@ export const generateWebsite = async (
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-1.5-flash-latest",
+      model: "gemini-1.5-flash",
       contents: [{ role: 'user', parts: [{ text: prompt }] }],
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,

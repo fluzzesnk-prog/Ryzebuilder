@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { 
-  Zap, MessageCircle, Instagram, Mail, Phone, Copy, 
+import {
+  Zap, MessageCircle, Instagram, Mail, Phone, Copy,
   Check, Loader2, Sparkles, Send, Target, Layout, ShieldCheck,
   ChevronRight, BrainCircuit
 } from 'lucide-react';
@@ -41,9 +41,14 @@ export default function OutreachGenerator({ currentProjectDesc, identity }: Outr
     setLoading(true);
     setCopied(false);
     try {
-      const activeKey = identity.apiKey || process.env.API_KEY;
+      const activeKey = identity.apiKey || import.meta.env.VITE_GEMINI_API_KEY;
+
+      if (!activeKey || activeKey === 'PLACEHOLDER_API_KEY') {
+        throw new Error("API Key não configurada. Configure VITE_GEMINI_API_KEY na Vercel.");
+      }
+
       const ai = new GoogleGenAI({ apiKey: activeKey });
-      
+
       const prompt = `
         Crie um script de prospecção de alta conversão para o canal: ${selectedChannel}.
         O tom de voz deve ser: ${selectedTone}.
@@ -113,8 +118,8 @@ export default function OutreachGenerator({ currentProjectDesc, identity }: Outr
                     onClick={() => setSelectedChannel(ch.id as Channel)}
                     className={cn(
                       "flex flex-col items-center gap-3 p-4 rounded-2xl border transition-all duration-300",
-                      selectedChannel === ch.id 
-                        ? "bg-white/[0.03] border-primary shadow-lg shadow-primary/5" 
+                      selectedChannel === ch.id
+                        ? "bg-white/[0.03] border-primary shadow-lg shadow-primary/5"
                         : "bg-white/[0.01] border-white/5 hover:border-white/20"
                     )}
                   >
@@ -138,8 +143,8 @@ export default function OutreachGenerator({ currentProjectDesc, identity }: Outr
                     onClick={() => setSelectedTone(t.id as Tone)}
                     className={cn(
                       "w-full px-4 py-3 rounded-xl border text-[10px] font-bold uppercase tracking-widest text-left transition-all",
-                      selectedTone === t.id 
-                        ? "bg-primary/10 border-primary text-primary" 
+                      selectedTone === t.id
+                        ? "bg-primary/10 border-primary text-primary"
                         : "bg-white/5 border-white/5 text-neutral-500 hover:text-neutral-300"
                     )}
                   >
@@ -149,7 +154,7 @@ export default function OutreachGenerator({ currentProjectDesc, identity }: Outr
               </div>
             </div>
 
-            <button 
+            <button
               onClick={generateScript}
               disabled={loading}
               className="w-full py-5 bg-primary text-background rounded-2xl font-black uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:scale-105 active:scale-95 transition-all shadow-xl shadow-primary/20 disabled:opacity-50"
@@ -167,7 +172,7 @@ export default function OutreachGenerator({ currentProjectDesc, identity }: Outr
                     <BrainCircuit className="w-4 h-4 text-primary" />
                     <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">Script de Vendas Personalizado</span>
                   </div>
-                  <button 
+                  <button
                     onClick={handleCopy}
                     className={cn(
                       "flex items-center gap-2 px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
@@ -184,12 +189,12 @@ export default function OutreachGenerator({ currentProjectDesc, identity }: Outr
                   </pre>
                 </div>
                 <div className="px-8 py-6 bg-primary/5 border-t border-white/5">
-                   <p className="text-[9px] text-primary font-black uppercase tracking-widest mb-1 flex items-center gap-2">
-                     <Target className="w-3 h-3" /> Estratégia de Conversão
-                   </p>
-                   <p className="text-[10px] text-neutral-500 font-medium">
-                     Este script foi otimizado para gerar curiosidade imediata. Lembre-se de substituir [Nome] e outros campos entre colchetes por dados reais do seu prospecto.
-                   </p>
+                  <p className="text-[9px] text-primary font-black uppercase tracking-widest mb-1 flex items-center gap-2">
+                    <Target className="w-3 h-3" /> Estratégia de Conversão
+                  </p>
+                  <p className="text-[10px] text-neutral-500 font-medium">
+                    Este script foi otimizado para gerar curiosidade imediata. Lembre-se de substituir [Nome] e outros campos entre colchetes por dados reais do seu prospecto.
+                  </p>
                 </div>
               </div>
             ) : (

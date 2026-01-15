@@ -23,9 +23,14 @@ export default function IntelligenceCenter({ currentProjectDesc, identity }: Int
     if (!currentProjectDesc) return;
     setLoading(true);
     try {
-      const activeKey = identity.apiKey || process.env.API_KEY;
+      const activeKey = identity.apiKey || import.meta.env.VITE_GEMINI_API_KEY;
+
+      if (!activeKey || activeKey === 'PLACEHOLDER_API_KEY') {
+        throw new Error("API Key não configurada. Configure VITE_GEMINI_API_KEY na Vercel.");
+      }
+
       const ai = new GoogleGenAI({ apiKey: activeKey });
-      
+
       const prompt = `
         Crie uma estratégia completa de marketing para este projeto: "${currentProjectDesc}".
         Imagine que você é o estrategista chefe da agência de ${identity.name || 'soluções digitais'} (${identity.specialty}).
@@ -47,7 +52,7 @@ export default function IntelligenceCenter({ currentProjectDesc, identity }: Int
         contents: prompt,
         config: { responseMimeType: "application/json" }
       });
-      
+
       const text = response.text?.trim() || "{}";
       const result = JSON.parse(text);
       setData(result);
@@ -91,8 +96,8 @@ export default function IntelligenceCenter({ currentProjectDesc, identity }: Int
               Extraia o máximo potencial de vendas do seu projeto. Geramos copy, anúncios e inteligência de SEO baseada no seu nicho.
             </p>
           </div>
-          
-          <button 
+
+          <button
             onClick={generateIntelligence}
             disabled={loading || !currentProjectDesc}
             className={cn(
@@ -132,13 +137,13 @@ export default function IntelligenceCenter({ currentProjectDesc, identity }: Int
                   ))}
                 </div>
               </div>
-              
+
               <CopyBox title="Texto Principal / VSL" content={data.copy} icon={Newspaper} />
             </div>
 
             <div className="space-y-6">
               <CopyBox title="Scripts de Anúncios (Ads)" content={data.ads} icon={Megaphone} />
-              
+
               <div className="bg-card border border-white/5 rounded-3xl p-8 space-y-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">

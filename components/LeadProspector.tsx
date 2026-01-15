@@ -25,6 +25,11 @@ export default function LeadProspector({ onSelectLead, customApiKey }: LeadProsp
 
     try {
       const activeKey = customApiKey || import.meta.env.VITE_GEMINI_API_KEY;
+
+      if (!activeKey || activeKey === 'PLACEHOLDER_API_KEY') {
+        throw new Error("API Key não configurada. Configure VITE_GEMINI_API_KEY na Vercel.");
+      }
+
       const ai = new GoogleGenAI({ apiKey: activeKey });
 
       let latLng = undefined;
@@ -41,7 +46,7 @@ export default function LeadProspector({ onSelectLead, customApiKey }: LeadProsp
       const searchPrompt = `Liste empresas reais de ${query} em ${location || 'minha localização'}.`;
 
       const response = await ai.models.generateContent({
-        model: "gemini-1.5-flash-latest",
+        model: "gemini-1.5-flash",
         contents: [{ role: 'user', parts: [{ text: searchPrompt }] }],
         config: {
           tools: [{ googleMaps: {} }, { googleSearch: {} }],
