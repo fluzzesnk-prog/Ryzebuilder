@@ -29,7 +29,8 @@ export default function IntelligenceCenter({ currentProjectDesc, identity }: Int
         throw new Error("API Key não configurada. Configure VITE_GEMINI_API_KEY na Vercel.");
       }
 
-      const ai = new GoogleGenAI({ apiKey: activeKey });
+      // EMERGENCY STABILITY: API v1 Estável para garantir resposta JSON sem 404
+      const ai = new GoogleGenAI({ apiKey: activeKey, apiVersion: 'v1' });
 
       const prompt = `
         Crie uma estratégia completa de marketing para este projeto: "${currentProjectDesc}".
@@ -48,7 +49,7 @@ export default function IntelligenceCenter({ currentProjectDesc, identity }: Int
       `;
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.0-flash-exp',
+        model: 'gemini-1.5-flash',
         contents: prompt,
         config: { responseMimeType: "application/json" }
       });
